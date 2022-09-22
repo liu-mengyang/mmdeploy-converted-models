@@ -1,0 +1,103 @@
+{
+    "pipeline": {
+        "input": [
+            "img"
+        ],
+        "output": [
+            "post_output"
+        ],
+        "tasks": [
+            {
+                "type": "Task",
+                "module": "Transform",
+                "name": "Preprocess",
+                "input": [
+                    "img"
+                ],
+                "output": [
+                    "prep_output"
+                ],
+                "transforms": [
+                    {
+                        "type": "LoadImageFromFile",
+                        "io_backend": "disk",
+                        "key": "img",
+                        "flag": "unchanged"
+                    },
+                    {
+                        "type": "Normalize",
+                        "keys": [
+                            "img"
+                        ],
+                        "mean": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "std": [
+                            255,
+                            255,
+                            255
+                        ],
+                        "to_rgb": true
+                    },
+                    {
+                        "type": "Collect",
+                        "keys": [
+                            "img"
+                        ],
+                        "meta_keys": [
+                            "flip_direction",
+                            "img_norm_cfg",
+                            "filename",
+                            "flip",
+                            "lq_path",
+                            "valid_ratio",
+                            "ori_shape",
+                            "scale_factor",
+                            "pad_shape",
+                            "img_shape",
+                            "ori_filename"
+                        ]
+                    },
+                    {
+                        "type": "ImageToTensor",
+                        "keys": [
+                            "img"
+                        ]
+                    }
+                ],
+                "sha256": "e5ed83fb84399213812dd315194184113ca99d5909a2de8998d1e516bc659677",
+                "fuse_transform": false
+            },
+            {
+                "name": "edsr",
+                "type": "Task",
+                "module": "Net",
+                "input": [
+                    "prep_output"
+                ],
+                "output": [
+                    "infer_output"
+                ],
+                "input_map": {
+                    "img": "input"
+                },
+                "output_map": {}
+            },
+            {
+                "type": "Task",
+                "module": "mmedit",
+                "name": "postprocess",
+                "component": "TensorToImg",
+                "params": {},
+                "output": [
+                    "post_output"
+                ],
+                "input": [
+                    "infer_output"
+                ]
+            }
+        ]
+    }
+}

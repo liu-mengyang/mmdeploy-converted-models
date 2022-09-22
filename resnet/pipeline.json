@@ -1,0 +1,115 @@
+{
+    "pipeline": {
+        "input": [
+            "img"
+        ],
+        "output": [
+            "post_output"
+        ],
+        "tasks": [
+            {
+                "type": "Task",
+                "module": "Transform",
+                "name": "Preprocess",
+                "input": [
+                    "img"
+                ],
+                "output": [
+                    "prep_output"
+                ],
+                "transforms": [
+                    {
+                        "type": "LoadImageFromFile"
+                    },
+                    {
+                        "type": "Resize",
+                        "size": [
+                            256,
+                            -1
+                        ]
+                    },
+                    {
+                        "type": "CenterCrop",
+                        "crop_size": 224
+                    },
+                    {
+                        "type": "Normalize",
+                        "mean": [
+                            123.675,
+                            116.28,
+                            103.53
+                        ],
+                        "std": [
+                            58.395,
+                            57.12,
+                            57.375
+                        ],
+                        "to_rgb": true
+                    },
+                    {
+                        "type": "ImageToTensor",
+                        "keys": [
+                            "img"
+                        ]
+                    },
+                    {
+                        "type": "Collect",
+                        "keys": [
+                            "img"
+                        ],
+                        "meta_keys": [
+                            "ori_shape",
+                            "img_norm_cfg",
+                            "scale_factor",
+                            "valid_ratio",
+                            "pad_shape",
+                            "ori_filename",
+                            "flip_direction",
+                            "filename",
+                            "img_shape",
+                            "flip"
+                        ]
+                    }
+                ],
+                "sha256": "fa993066c1ec32a14d8d06ecfb8d5c54e7a04ec31ba833e1abf1f16c05e027c7",
+                "fuse_transform": false
+            },
+            {
+                "name": "resnet",
+                "type": "Task",
+                "module": "Net",
+                "input": [
+                    "prep_output"
+                ],
+                "output": [
+                    "infer_output"
+                ],
+                "input_map": {
+                    "img": "input"
+                },
+                "output_map": {}
+            },
+            {
+                "type": "Task",
+                "module": "mmcls",
+                "name": "postprocess",
+                "component": "LinearClsHead",
+                "params": {
+                    "num_classes": 1000,
+                    "in_channels": 512,
+                    "loss": {
+                        "type": "CrossEntropyLoss",
+                        "loss_weight": 1.0
+                    },
+                    "topk": 5
+                },
+                "output": [
+                    "post_output"
+                ],
+                "input": [
+                    "infer_output"
+                ]
+            }
+        ]
+    }
+}

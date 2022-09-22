@@ -1,0 +1,121 @@
+{
+    "pipeline": {
+        "input": [
+            "img"
+        ],
+        "output": [
+            "post_output"
+        ],
+        "tasks": [
+            {
+                "type": "Task",
+                "module": "Transform",
+                "name": "Preprocess",
+                "input": [
+                    "img"
+                ],
+                "output": [
+                    "prep_output"
+                ],
+                "transforms": [
+                    {
+                        "type": "LoadImageFromFile"
+                    },
+                    {
+                        "type": "TopDownGetBboxCenterScale",
+                        "padding": 1.25,
+                        "image_size": [
+                            192,
+                            256
+                        ]
+                    },
+                    {
+                        "type": "TopDownAffine",
+                        "image_size": [
+                            192,
+                            256
+                        ]
+                    },
+                    {
+                        "type": "Normalize",
+                        "mean": [
+                            123.675,
+                            116.28,
+                            103.53
+                        ],
+                        "std": [
+                            58.395,
+                            57.120000000000005,
+                            57.375
+                        ],
+                        "to_rgb": true
+                    },
+                    {
+                        "type": "ImageToTensor",
+                        "keys": [
+                            "img"
+                        ]
+                    },
+                    {
+                        "type": "Collect",
+                        "keys": [
+                            "img"
+                        ],
+                        "meta_keys": [
+                            "ori_shape",
+                            "scale_factor",
+                            "valid_ratio",
+                            "flip",
+                            "center",
+                            "ori_filename",
+                            "scale",
+                            "bbox_score",
+                            "flip_pairs",
+                            "img_norm_cfg",
+                            "filename",
+                            "img_shape",
+                            "flip_direction",
+                            "image_file",
+                            "rotation",
+                            "pad_shape"
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "topdown",
+                "type": "Task",
+                "module": "Net",
+                "input": [
+                    "prep_output"
+                ],
+                "output": [
+                    "infer_output"
+                ],
+                "input_map": {
+                    "img": "input"
+                },
+                "output_map": {}
+            },
+            {
+                "type": "Task",
+                "module": "mmpose",
+                "name": "postprocess",
+                "component": "TopdownHeatmapSimpleHeadDecode",
+                "params": {
+                    "flip_test": true,
+                    "post_process": "default",
+                    "shift_heatmap": true,
+                    "modulate_kernel": 11
+                },
+                "output": [
+                    "post_output"
+                ],
+                "input": [
+                    "prep_output",
+                    "infer_output"
+                ]
+            }
+        ]
+    }
+}

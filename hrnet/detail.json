@@ -1,0 +1,33 @@
+{
+    "version": "0.8.0",
+    "codebase": {
+        "task": "PoseDetection",
+        "codebase": "mmpose",
+        "version": "0.28.1",
+        "pth": "checkpoints/hrnet_w32_aic_256x192-30a4e465_20200826.pth",
+        "config": "mmpose/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/hrnet_w32_aic_256x192.py"
+    },
+    "codebase_config": {
+        "type": "mmpose",
+        "task": "PoseDetection"
+    },
+    "onnx_config": {
+        "type": "onnx",
+        "export_params": true,
+        "keep_initializers_as_inputs": false,
+        "opset_version": 11,
+        "save_file": "end2end.onnx",
+        "input_names": [
+            "input"
+        ],
+        "output_names": [
+            "output"
+        ],
+        "input_shape": null,
+        "optimize": true
+    },
+    "backend_config": {
+        "type": "onnxruntime"
+    },
+    "calib_config": {}
+}

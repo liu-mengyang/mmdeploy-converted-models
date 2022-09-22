@@ -1,0 +1,114 @@
+{
+    "pipeline": {
+        "input": [
+            "img"
+        ],
+        "output": [
+            "post_output"
+        ],
+        "tasks": [
+            {
+                "type": "Task",
+                "module": "Transform",
+                "name": "Preprocess",
+                "input": [
+                    "img"
+                ],
+                "output": [
+                    "prep_output"
+                ],
+                "transforms": [
+                    {
+                        "type": "LoadImageFromFile"
+                    },
+                    {
+                        "type": "Resize",
+                        "keep_ratio": true,
+                        "size": [
+                            1024,
+                            1024
+                        ]
+                    },
+                    {
+                        "type": "Normalize",
+                        "mean": [
+                            123.675,
+                            116.28,
+                            103.53
+                        ],
+                        "std": [
+                            58.395,
+                            57.12,
+                            57.375
+                        ],
+                        "to_rgb": true
+                    },
+                    {
+                        "type": "Pad",
+                        "size_divisor": 32
+                    },
+                    {
+                        "type": "DefaultFormatBundle"
+                    },
+                    {
+                        "type": "Collect",
+                        "keys": [
+                            "img"
+                        ],
+                        "meta_keys": [
+                            "valid_ratio",
+                            "flip_direction",
+                            "img_norm_cfg",
+                            "ori_shape",
+                            "scale_factor",
+                            "flip",
+                            "filename",
+                            "ori_filename",
+                            "img_shape",
+                            "pad_shape"
+                        ]
+                    }
+                ],
+                "sha256": "83ba9eb66901a32e1fe5ebcff0a6375706597472e185e1d94aee2043a7399d3b",
+                "fuse_transform": false
+            },
+            {
+                "name": "rotatedretinanet",
+                "type": "Task",
+                "module": "Net",
+                "input": [
+                    "prep_output"
+                ],
+                "output": [
+                    "infer_output"
+                ],
+                "input_map": {
+                    "img": "input"
+                },
+                "output_map": {}
+            },
+            {
+                "type": "Task",
+                "module": "mmrotate",
+                "name": "postprocess",
+                "component": "ResizeRBBox",
+                "params": {
+                    "nms_pre": 2000,
+                    "min_bbox_size": 0,
+                    "score_thr": 0.05,
+                    "nms": {
+                        "iou_thr": 0.1
+                    },
+                    "max_per_img": 2000
+                },
+                "output": [
+                    "post_output"
+                ],
+                "input": [
+                    "prep_output",
+                    "infer_output"
+                ]
+            }
+        ]
+    }
+}

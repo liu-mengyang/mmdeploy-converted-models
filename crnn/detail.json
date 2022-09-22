@@ -1,0 +1,44 @@
+{
+    "version": "0.8.0",
+    "codebase": {
+        "task": "TextRecognition",
+        "codebase": "mmocr",
+        "version": "0.6.1",
+        "pth": "checkpoints/crnn_academic-a723a1c5.pth",
+        "config": "mmocr/configs/textrecog/crnn/crnn_academic_dataset.py"
+    },
+    "codebase_config": {
+        "type": "mmocr",
+        "task": "TextRecognition"
+    },
+    "onnx_config": {
+        "type": "onnx",
+        "export_params": true,
+        "keep_initializers_as_inputs": false,
+        "opset_version": 11,
+        "save_file": "end2end.onnx",
+        "input_names": [
+            "input"
+        ],
+        "output_names": [
+            "output"
+        ],
+        "input_shape": null,
+        "optimize": true,
+        "dynamic_axes": {
+            "input": {
+                "0": "batch",
+                "3": "width"
+            },
+            "output": {
+                "0": "batch",
+                "1": "seq_len",
+                "2": "num_classes"
+            }
+        }
+    },
+    "backend_config": {
+        "type": "onnxruntime"
+    },
+    "calib_config": {}
+}

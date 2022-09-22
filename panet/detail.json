@@ -1,0 +1,45 @@
+{
+    "version": "0.8.0",
+    "codebase": {
+        "task": "TextDetection",
+        "codebase": "mmocr",
+        "version": "0.6.1",
+        "pth": "checkpoints/panet_r18_fpem_ffm_sbn_600e_icdar2015_20210219-42dbe46a.pth",
+        "config": "mmocr/configs/textdet/panet/panet_r18_fpem_ffm_600e_icdar2015.py"
+    },
+    "codebase_config": {
+        "type": "mmocr",
+        "task": "TextDetection"
+    },
+    "onnx_config": {
+        "type": "onnx",
+        "export_params": true,
+        "keep_initializers_as_inputs": false,
+        "opset_version": 11,
+        "save_file": "end2end.onnx",
+        "input_names": [
+            "input"
+        ],
+        "output_names": [
+            "output"
+        ],
+        "input_shape": null,
+        "optimize": true,
+        "dynamic_axes": {
+            "input": {
+                "0": "batch",
+                "2": "height",
+                "3": "width"
+            },
+            "output": {
+                "0": "batch",
+                "2": "height",
+                "3": "width"
+            }
+        }
+    },
+    "backend_config": {
+        "type": "onnxruntime"
+    },
+    "calib_config": {}
+}

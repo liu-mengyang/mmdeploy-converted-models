@@ -1,0 +1,119 @@
+{
+    "pipeline": {
+        "input": [
+            "img"
+        ],
+        "output": [
+            "post_output"
+        ],
+        "tasks": [
+            {
+                "type": "Task",
+                "module": "Transform",
+                "name": "Preprocess",
+                "input": [
+                    "img"
+                ],
+                "output": [
+                    "prep_output"
+                ],
+                "transforms": [
+                    {
+                        "type": "LoadImageFromFile",
+                        "color_type": "color_ignore_orientation"
+                    },
+                    {
+                        "type": "Resize",
+                        "keep_ratio": true,
+                        "size": [
+                            736,
+                            1333
+                        ]
+                    },
+                    {
+                        "type": "Normalize",
+                        "mean": [
+                            123.675,
+                            116.28,
+                            103.53
+                        ],
+                        "std": [
+                            58.395,
+                            57.12,
+                            57.375
+                        ],
+                        "to_rgb": true
+                    },
+                    {
+                        "type": "Pad",
+                        "size_divisor": 32
+                    },
+                    {
+                        "type": "DefaultFormatBundle"
+                    },
+                    {
+                        "type": "Collect",
+                        "keys": [
+                            "img"
+                        ],
+                        "meta_keys": [
+                            "pad_shape",
+                            "ori_shape",
+                            "ori_filename",
+                            "filename",
+                            "img_shape",
+                            "img_norm_cfg",
+                            "flip_direction",
+                            "valid_ratio",
+                            "scale_factor",
+                            "flip"
+                        ]
+                    }
+                ],
+                "sha256": "83ba9eb66901a32e1fe5ebcff0a6375706597472e185e1d94aee2043a7399d3b",
+                "fuse_transform": false
+            },
+            {
+                "name": "dbnet",
+                "type": "Task",
+                "module": "Net",
+                "input": [
+                    "prep_output"
+                ],
+                "output": [
+                    "infer_output"
+                ],
+                "input_map": {
+                    "img": "input"
+                },
+                "output_map": {}
+            },
+            {
+                "type": "Task",
+                "module": "mmocr",
+                "name": "postprocess",
+                "component": "DBHead",
+                "params": {
+                    "in_channels": 256,
+                    "loss": {
+                        "type": "DBLoss",
+                        "alpha": 5.0,
+                        "beta": 10.0,
+                        "bbce_loss": true
+                    },
+                    "postprocessor": {
+                        "type": "DBPostprocessor",
+                        "text_repr_type": "quad"
+                    }
+                },
+                "output": [
+                    "post_output"
+                ],
+                "input": [
+                    "prep_output",
+                    "infer_output"
+                ]
+            }
+        ]
+    }
+}

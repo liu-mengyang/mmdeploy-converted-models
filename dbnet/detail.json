@@ -1,0 +1,45 @@
+{
+    "version": "0.8.0",
+    "codebase": {
+        "task": "TextDetection",
+        "codebase": "mmocr",
+        "version": "0.6.1",
+        "pth": "checkpoints/dbnet_r18_fpnc_sbn_1200e_icdar2015_20210329-ba3ab597.pth",
+        "config": "mmocr/configs/textdet/dbnet/dbnet_r18_fpnc_1200e_icdar2015.py"
+    },
+    "codebase_config": {
+        "type": "mmocr",
+        "task": "TextDetection"
+    },
+    "onnx_config": {
+        "type": "onnx",
+        "export_params": true,
+        "keep_initializers_as_inputs": false,
+        "opset_version": 11,
+        "save_file": "end2end.onnx",
+        "input_names": [
+            "input"
+        ],
+        "output_names": [
+            "output"
+        ],
+        "input_shape": null,
+        "optimize": true,
+        "dynamic_axes": {
+            "input": {
+                "0": "batch",
+                "2": "height",
+                "3": "width"
+            },
+            "output": {
+                "0": "batch",
+                "2": "height",
+                "3": "width"
+            }
+        }
+    },
+    "backend_config": {
+        "type": "onnxruntime"
+    },
+    "calib_config": {}
+}

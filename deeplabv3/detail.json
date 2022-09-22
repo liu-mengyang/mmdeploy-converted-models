@@ -1,0 +1,45 @@
+{
+    "version": "0.8.0",
+    "codebase": {
+        "task": "Segmentation",
+        "codebase": "mmseg",
+        "version": "0.28.0",
+        "pth": "checkpoints/deeplabv3_r18-d8_512x1024_80k_cityscapes_20201225_021506-23dffbe2.pth",
+        "config": "mmsegmentation/configs/deeplabv3/deeplabv3_r18-d8_512x1024_80k_cityscapes.py"
+    },
+    "codebase_config": {
+        "type": "mmseg",
+        "task": "Segmentation"
+    },
+    "onnx_config": {
+        "type": "onnx",
+        "export_params": true,
+        "keep_initializers_as_inputs": false,
+        "opset_version": 11,
+        "save_file": "end2end.onnx",
+        "input_names": [
+            "input"
+        ],
+        "output_names": [
+            "output"
+        ],
+        "input_shape": null,
+        "optimize": true,
+        "dynamic_axes": {
+            "input": {
+                "0": "batch",
+                "2": "height",
+                "3": "width"
+            },
+            "output": {
+                "0": "batch",
+                "2": "height",
+                "3": "width"
+            }
+        }
+    },
+    "backend_config": {
+        "type": "onnxruntime"
+    },
+    "calib_config": {}
+}

@@ -1,0 +1,41 @@
+{
+    "version": "0.8.0",
+    "codebase": {
+        "task": "RotatedDetection",
+        "codebase": "mmrotate",
+        "version": "0.3.2",
+        "pth": "checkpoints/rotated_retinanet_obb_r50_fpn_1x_dota_le135-e4131166.pth",
+        "config": "mmrotate/configs/rotated_retinanet/rotated_retinanet_obb_r50_fpn_1x_dota_le135.py"
+    },
+    "codebase_config": {
+        "type": "mmrotate",
+        "task": "RotatedDetection",
+        "post_processing": {
+            "score_threshold": 0.05,
+            "iou_threshold": 0.1,
+            "pre_top_k": 3000,
+            "keep_top_k": 2000,
+            "max_output_boxes_per_class": 2000
+        }
+    },
+    "onnx_config": {
+        "type": "onnx",
+        "export_params": true,
+        "keep_initializers_as_inputs": false,
+        "opset_version": 11,
+        "save_file": "end2end.onnx",
+        "input_names": [
+            "input"
+        ],
+        "output_names": [
+            "dets",
+            "labels"
+        ],
+        "input_shape": null,
+        "optimize": true
+    },
+    "backend_config": {
+        "type": "onnxruntime"
+    },
+    "calib_config": {}
+}

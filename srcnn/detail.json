@@ -1,0 +1,45 @@
+{
+    "version": "0.8.0",
+    "codebase": {
+        "task": "SuperResolution",
+        "codebase": "mmedit",
+        "version": "0.15.2",
+        "pth": "checkpoints/srcnn_x4k915_1x16_1000k_div2k_20200608-4186f232.pth",
+        "config": "mmediting/configs/restorers/srcnn/srcnn_x4k915_g1_1000k_div2k.py"
+    },
+    "codebase_config": {
+        "type": "mmedit",
+        "task": "SuperResolution"
+    },
+    "onnx_config": {
+        "type": "onnx",
+        "export_params": true,
+        "keep_initializers_as_inputs": false,
+        "opset_version": 11,
+        "save_file": "end2end.onnx",
+        "input_names": [
+            "input"
+        ],
+        "output_names": [
+            "output"
+        ],
+        "input_shape": null,
+        "optimize": true,
+        "dynamic_axes": {
+            "input": {
+                "0": "batch",
+                "2": "height",
+                "3": "width"
+            },
+            "output": {
+                "0": "batch",
+                "2": "height",
+                "3": "width"
+            }
+        }
+    },
+    "backend_config": {
+        "type": "onnxruntime"
+    },
+    "calib_config": {}
+}

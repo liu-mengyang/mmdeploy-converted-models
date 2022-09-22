@@ -1,0 +1,100 @@
+{
+    "pipeline": {
+        "input": [
+            "img"
+        ],
+        "output": [
+            "post_output"
+        ],
+        "tasks": [
+            {
+                "type": "Task",
+                "module": "Transform",
+                "name": "Preprocess",
+                "input": [
+                    "img"
+                ],
+                "output": [
+                    "prep_output"
+                ],
+                "transforms": [
+                    {
+                        "type": "LoadImageFromFile",
+                        "color_type": "grayscale"
+                    },
+                    {
+                        "type": "ResizeOCR",
+                        "height": 32,
+                        "min_width": 32,
+                        "max_width": null,
+                        "keep_aspect_ratio": true
+                    },
+                    {
+                        "type": "Normalize",
+                        "mean": [
+                            127
+                        ],
+                        "std": [
+                            127
+                        ]
+                    },
+                    {
+                        "type": "DefaultFormatBundle"
+                    },
+                    {
+                        "type": "Collect",
+                        "keys": [
+                            "img"
+                        ],
+                        "meta_keys": [
+                            "valid_ratio",
+                            "scale_factor",
+                            "filename",
+                            "img_norm_cfg",
+                            "flip_direction",
+                            "resize_shape",
+                            "pad_shape",
+                            "ori_shape",
+                            "ori_filename",
+                            "img_shape",
+                            "flip"
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "crnnnet",
+                "type": "Task",
+                "module": "Net",
+                "input": [
+                    "prep_output"
+                ],
+                "output": [
+                    "infer_output"
+                ],
+                "input_map": {
+                    "img": "input"
+                },
+                "output_map": {}
+            },
+            {
+                "type": "Task",
+                "module": "mmocr",
+                "name": "postprocess",
+                "component": "CTCConvertor",
+                "params": {
+                    "dict_type": "DICT36",
+                    "with_unknown": false,
+                    "lower": true
+                },
+                "output": [
+                    "post_output"
+                ],
+                "input": [
+                    "prep_output",
+                    "infer_output"
+                ]
+            }
+        ]
+    }
+}
